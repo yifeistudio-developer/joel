@@ -1,0 +1,6 @@
+# ide directory
+.idea
+
+# build tool
+build
+.gradle
