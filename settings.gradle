@@ -1,0 +1,4 @@
+rootProject.name = 'joel'
+include 'joel-worker'
+include 'joel-watcher'
+
