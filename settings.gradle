@@ -1,4 +1,5 @@
 rootProject.name = 'joel'
 include 'joel-worker'
 include 'joel-watcher'
-
+include 'joel-starter'
+include 'joel-starter-sample'
