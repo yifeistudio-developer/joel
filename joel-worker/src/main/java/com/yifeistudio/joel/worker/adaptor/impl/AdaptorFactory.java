@@ -1,7 +1,7 @@
 package com.yifeistudio.joel.worker.adaptor.impl;
 
 import com.yifeistudio.joel.worker.adaptor.CacheAdaptor;
-import com.yifeistudio.joel.worker.config.WorkerContext;
+import com.yifeistudio.joel.worker.model.WorkerConfig;
 
 /**
  * @author yi
@@ -11,7 +11,7 @@ public final class AdaptorFactory {
 
     private AdaptorFactory() { }
 
-    public static CacheAdaptor getCacheAdaptor(WorkerContext context) {
+    public static CacheAdaptor getCacheAdaptor(WorkerConfig context) {
         return new DefaultRedisAdaptorImpl(context.getRedisConfig());
     }
 

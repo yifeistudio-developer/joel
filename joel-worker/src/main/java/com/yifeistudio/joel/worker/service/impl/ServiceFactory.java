@@ -1,6 +1,6 @@
 package com.yifeistudio.joel.worker.service.impl;
 
-import com.yifeistudio.joel.worker.config.WorkerContext;
+import com.yifeistudio.joel.worker.model.WorkerConfig;
 import com.yifeistudio.joel.worker.service.IdentityService;
 
 /**
@@ -11,8 +11,8 @@ public final class ServiceFactory {
 
     private ServiceFactory() { }
 
-    public static IdentityService getIdentityService(WorkerContext config) {
-        return new IdentityServiceImpl(config);
+    public static IdentityService getIdentityService(WorkerConfig workerConfig) {
+        return new IdentityServiceImpl(workerConfig);
     }
 
 }

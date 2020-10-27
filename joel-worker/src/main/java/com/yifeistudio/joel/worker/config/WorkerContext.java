@@ -1,28 +1,35 @@
 package com.yifeistudio.joel.worker.config;
 
-import lombok.Data;
-
+import com.yifeistudio.joel.worker.model.WorkerConfig;
+import com.yifeistudio.joel.worker.model.event.WorkerEvent;
+import lombok.Getter;
 
 
 /**
  * @author yi
  * @since 2020/10/27-12:14 下午
  */
-@Data
 public class WorkerContext {
 
-    private String masterId;
+    @Getter
+    private final WorkerConfig workerConfig;
 
-    private RedisConfig redisConfig;
+    public WorkerContext(WorkerConfig workerConfig) {
+        this.workerConfig = workerConfig;
+    }
+
+
+
 
     public void init() {
+
         // 加载配置
 
         // 注册监听器
 
     }
 
-    public void fire() {
+    public void fire(WorkerEvent event) {
 
     }
 

@@ -1,7 +1,7 @@
 package com.yifeistudio.joel.worker.adaptor.impl;
 
 import com.yifeistudio.joel.worker.adaptor.CacheAdaptor;
-import com.yifeistudio.joel.worker.config.RedisConfig;
+import com.yifeistudio.joel.worker.model.RedisConfig;
 
 /**
  * @author yi

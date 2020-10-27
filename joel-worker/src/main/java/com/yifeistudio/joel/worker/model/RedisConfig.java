@@ -1,4 +1,4 @@
-package com.yifeistudio.joel.worker.config;
+package com.yifeistudio.joel.worker.model;
 
 import lombok.Data;
 

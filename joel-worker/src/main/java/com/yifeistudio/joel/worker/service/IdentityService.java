@@ -17,5 +17,14 @@ public interface IdentityService {
      */
     void releaseMasterRole();
 
+    /**
+     * 注册
+     */
+    void signup();
+
+    /**
+     * 注销
+     */
+    void logout();
 
 }
