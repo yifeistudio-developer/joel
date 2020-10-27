@@ -162,6 +162,15 @@ public class AssertUtilTests {
             System.out.println("passed : " + 11);
         }
 
+        // 12.
+        try {
+            AssertUtil.notNull(true, null, 500, ASSERT_EXCEPTION);
+        } catch (Exception e) {
+            assert e.getMessage().equals(ASSERT_EXCEPTION);
+            assert e instanceof AssertException;
+            System.out.println("passed : " + 12);
+        }
+
         System.out.println("testing ended.");
     }
 
