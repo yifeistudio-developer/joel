@@ -18,8 +18,6 @@ class MonitorServiceImpl implements MonitorService {
         this.workerContext = workerContext;
     }
 
-    private volatile MonitorState state;
-
     @Override
     public void activate() {
 
@@ -28,14 +26,6 @@ class MonitorServiceImpl implements MonitorService {
     @Override
     public void deactivate() {
 
-    }
-
-
-    enum MonitorState {
-        READY,
-        RUNNING,
-        WAITING,
-        STOPPED;
     }
 
 
