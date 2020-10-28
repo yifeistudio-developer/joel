@@ -1,7 +1,7 @@
 package com.yifeistudio.joel.worker.listener.impl;
 
+import com.yifeistudio.joel.worker.config.WorkerContext;
 import com.yifeistudio.joel.worker.listener.WorkerListener;
-import com.yifeistudio.joel.worker.model.WorkerConfig;
 import com.yifeistudio.joel.worker.service.IdentityService;
 import com.yifeistudio.joel.worker.service.impl.ServiceFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +19,11 @@ public class DefaultWorkerListener implements WorkerListener {
 
     private final IdentityService identityService;
 
-    public DefaultWorkerListener(WorkerConfig workerConfig) {
-        this.identityService = ServiceFactory.getIdentityService(workerConfig);
+    private final WorkerContext workerContext;
+
+    public DefaultWorkerListener(WorkerContext workerContext) {
+        this.workerContext = workerContext;
+        this.identityService = ServiceFactory.getIdentityService(workerContext.getWorkerConfig());
     }
 
     @Override
@@ -41,18 +44,29 @@ public class DefaultWorkerListener implements WorkerListener {
         // 激活心跳
         if (heartBeaThread == null) {
             heartBeaThread = new Thread(() -> {
-
+                while (!Thread.interrupted()) {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        log.warn("heartbeat interrupted");
+                        break;
+                    }
+                    if (log.isDebugEnabled()) {
+                        log.debug("heartbeat...");
+                    }
+                }
             });
             heartBeaThread.setDaemon(true);
             heartBeaThread.setName(HEARTBEAT_THREAD);
-
+            heartBeaThread.start();
         }
+
+        workerContext.fireRun();
     }
 
 
-
-
-
-
-
+    @Override
+    public void onStop() {
+        heartBeaThread.interrupt();
+    }
 }

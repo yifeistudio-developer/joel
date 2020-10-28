@@ -15,13 +15,21 @@ import java.util.concurrent.locks.LockSupport;
 public class WorkerApplication {
 
     public static void main(String[] args) {
-        WorkerApplication.startup(new WorkerContext(new WorkerConfig()));
+        WorkerContext workerContext = WorkerApplication.startup(new WorkerConfig());
 
-        LockSupport.parkUntil(Instant.now().plusSeconds(5).toEpochMilli());
+
+        LockSupport.parkUntil(Instant.now().plusSeconds(15).toEpochMilli());
+
+
+        workerContext.fireStop();
+        LockSupport.parkUntil(Instant.now().plusSeconds(25).toEpochMilli());
+
     }
 
-    public static void startup(WorkerContext context) {
-        context.init();
-        context.startup();
+    public static WorkerContext startup(WorkerConfig config) {
+        WorkerContext workerContext = new WorkerContext(config);
+        workerContext.init();
+        workerContext.fireStartup();
+        return workerContext;
     }
 }

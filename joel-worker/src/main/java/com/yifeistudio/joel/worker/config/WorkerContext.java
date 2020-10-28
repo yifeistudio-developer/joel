@@ -22,6 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
+ * 节点全局上下文
  * @author yi
  * @since 2020/10/27-12:14 下午
  */
@@ -66,7 +67,7 @@ public class WorkerContext {
 
         // 响应停机
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            fire(State.STOP);
+            fire(State.STOPPING);
         }));
     }
 
@@ -74,29 +75,29 @@ public class WorkerContext {
     /**
      * 开机
      */
-    public void startup() {
-        fire(State.START);
+    public void fireStartup() {
+        fire(State.STARTING);
     }
 
     /**
      * 关机
      */
-    public void stop() {
-        fire(State.STOP);
+    public void fireStop() {
+        fire(State.STOPPING);
     }
 
     /**
      * 暂停
      */
-    public void suspend() {
-        fire(State.SUSPEND);
+    public void fireSuspend() {
+        fire(State.SUSPENDING);
     }
 
     /**
      * 继续
      */
-    public void resume() {
-        fire(State.RESUME);
+    public void fireRun() {
+        fire(State.RUNNING);
     }
 
     // ----------------------------------
@@ -145,7 +146,7 @@ public class WorkerContext {
     private void registryListener() {
         if (workerListeners == null) {
             workerListeners = new ArrayList<>();
-            workerListeners.add(new DefaultWorkerListener(workerConfig));
+            workerListeners.add(new DefaultWorkerListener(this));
         }
     }
 
@@ -158,9 +159,19 @@ public class WorkerContext {
                 LOCK.lock();
                 try {
                     STATE_CHANGED.await();
-                    if (state == State.START) {
-                        workerListeners.forEach(v -> executor.execute(v::onStart));
+                    switch (state) {
+                        case STARTING:
+                            workerListeners.forEach(v -> executor.execute(v::onStart));
+                            break;
+                        case SUSPENDING:
+                            workerListeners.forEach(v -> executor.execute(v::onSuspend));
+                            break;
+                        case STOPPING:
+                            workerListeners.forEach(v -> executor.execute(v::onStop));
+                            break;
+                        default:
                     }
+
                 } catch (InterruptedException ignore) {
                 } finally {
                     LOCK.unlock();
@@ -179,10 +190,10 @@ public class WorkerContext {
      * 上下文状态
      */
     private enum State {
-        START,
-        SUSPEND,
-        RESUME,
-        STOP
+        STARTING,
+        RUNNING,
+        SUSPENDING,
+        STOPPING
     }
 
     /*
@@ -220,7 +231,7 @@ public class WorkerContext {
             }
             return "";
         } catch (SocketException e) {
-            // TODO: 2020/10/28 warn exception
+            log.warn("got worker ip address failed.");
             return "";
         }
     }
