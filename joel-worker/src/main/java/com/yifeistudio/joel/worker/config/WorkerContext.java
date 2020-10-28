@@ -5,6 +5,7 @@ import com.yifeistudio.joel.worker.listener.impl.DefaultWorkerListener;
 import com.yifeistudio.joel.worker.model.WorkerConfig;
 import com.yifeistudio.joel.worker.model.WorkerInfo;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.management.ManagementFactory;
 import java.net.Inet4Address;
@@ -24,7 +25,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author yi
  * @since 2020/10/27-12:14 下午
  */
+@Slf4j
 public class WorkerContext {
+
+    private static final String STATE_MONITOR_THREAD = "state-monitor-thread";
 
     private static final Lock LOCK = new ReentrantLock();
 
@@ -59,6 +63,11 @@ public class WorkerContext {
 
         // 启动消息通知线程
         activateStateMonitor();
+
+        // 响应停机
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            fire(State.STOP);
+        }));
     }
 
 
@@ -105,6 +114,9 @@ public class WorkerContext {
         int coreSize = Runtime.getRuntime().availableProcessors();
         workerInfo.setCoreSize(coreSize);
         workerInfo.setIpAddress(getWorkerIpAddress());
+        if (log.isInfoEnabled()) {
+            log.info("work information loaded.");
+        }
     }
 
     /*
@@ -114,12 +126,16 @@ public class WorkerContext {
 
         // TODO: 2020/10/28 配置执行线程池
         if (executor == null) {
-            ThreadFactory threadFactory = r -> null;
+            ThreadFactory threadFactory = Thread::new;
+
             executor = new ThreadPoolExecutor(1,
                     1,
                     5,
                     TimeUnit.MINUTES, new LinkedBlockingDeque<>(),
                     threadFactory);
+        }
+        if (log.isInfoEnabled()) {
+            log.info("work configuration loaded.");
         }
     }
 
@@ -154,6 +170,7 @@ public class WorkerContext {
         stateMonitor.setUncaughtExceptionHandler((thread, throwable) -> {
             // TODO: 2020/10/28 未知异常处理器
         });
+        stateMonitor.setName(STATE_MONITOR_THREAD);
         stateMonitor.setDaemon(true);
         stateMonitor.start();
     }
