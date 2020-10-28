@@ -9,5 +9,10 @@ import lombok.Data;
 @Data
 public class WorkerInfo {
 
+    private String hostname;
+
+    private String ipAddress;
+
+    private Integer coreSize;
 
 }

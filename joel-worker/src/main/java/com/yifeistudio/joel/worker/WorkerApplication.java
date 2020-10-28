@@ -2,7 +2,6 @@ package com.yifeistudio.joel.worker;
 
 import com.yifeistudio.joel.worker.config.WorkerContext;
 import com.yifeistudio.joel.worker.model.WorkerConfig;
-import com.yifeistudio.joel.worker.model.event.WorkerEvent;
 
 /**
  * @author yi
@@ -16,7 +15,7 @@ public class WorkerApplication {
 
     public static void startup(WorkerContext context) {
         context.init();
-        context.fire(WorkerEvent.START);
+        context.startup();
     }
 
 }

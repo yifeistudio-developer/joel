@@ -11,7 +11,8 @@ public class WorkerConfig {
 
     private String masterId;
 
-    private RedisConfig redisConfig;
+    private ExecutorConfig executor;
 
+    private RedisConfig redis;
 
 }

@@ -12,7 +12,7 @@ public final class AdaptorFactory {
     private AdaptorFactory() { }
 
     public static CacheAdaptor getCacheAdaptor(WorkerConfig context) {
-        return new DefaultRedisAdaptorImpl(context.getRedisConfig());
+        return new DefaultRedisAdaptorImpl(context.getRedis());
     }
 
 
