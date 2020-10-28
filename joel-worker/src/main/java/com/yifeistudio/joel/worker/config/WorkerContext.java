@@ -16,9 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
@@ -27,15 +24,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * @since 2020/10/27-12:14 下午
  */
 @Slf4j
-public class WorkerContext {
+public class WorkerContext extends AbstractContext {
 
     private static final String STATE_MONITOR_THREAD = "state-monitor-thread";
-
-    private static final Lock LOCK = new ReentrantLock();
-
-    private static final Condition STATE_CHANGED = LOCK.newCondition();
-
-    private State state;
 
     private WorkerInfo workerInfo;
 
@@ -51,6 +42,7 @@ public class WorkerContext {
         this.workerConfig = workerConfig;
     }
 
+    @Override
     public void init() {
 
         // 填充节点信息
@@ -72,33 +64,6 @@ public class WorkerContext {
     }
 
 
-    /**
-     * 开机
-     */
-    public void fireStartup() {
-        fire(State.STARTING);
-    }
-
-    /**
-     * 关机
-     */
-    public void fireStop() {
-        fire(State.STOPPING);
-    }
-
-    /**
-     * 暂停
-     */
-    public void fireSuspend() {
-        fire(State.SUSPENDING);
-    }
-
-    /**
-     * 继续
-     */
-    public void fireRun() {
-        fire(State.RUNNING);
-    }
 
     // ----------------------------------
 
@@ -128,7 +93,6 @@ public class WorkerContext {
         // TODO: 2020/10/28 配置执行线程池
         if (executor == null) {
             ThreadFactory threadFactory = Thread::new;
-
             executor = new ThreadPoolExecutor(1,
                     1,
                     5,
@@ -171,42 +135,20 @@ public class WorkerContext {
                             break;
                         default:
                     }
-
                 } catch (InterruptedException ignore) {
+                    log.warn("state monitor interrupted.");
                 } finally {
                     LOCK.unlock();
                 }
             }
         });
+
         stateMonitor.setUncaughtExceptionHandler((thread, throwable) -> {
             // TODO: 2020/10/28 未知异常处理器
         });
         stateMonitor.setName(STATE_MONITOR_THREAD);
         stateMonitor.setDaemon(true);
         stateMonitor.start();
-    }
-
-    /*
-     * 上下文状态
-     */
-    private enum State {
-        STARTING,
-        RUNNING,
-        SUSPENDING,
-        STOPPING
-    }
-
-    /*
-     * 发布状态变更通知
-     */
-    private void fire(State state) {
-        LOCK.lock();
-        try {
-            this.state = state;
-            STATE_CHANGED.signal();
-        } finally {
-            LOCK.unlock();
-        }
     }
 
     /*

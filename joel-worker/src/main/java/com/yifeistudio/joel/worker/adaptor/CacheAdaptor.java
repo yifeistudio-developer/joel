@@ -1,6 +1,7 @@
 package com.yifeistudio.joel.worker.adaptor;
 
 /**
+ * 缓存适配器
  * @author yi
  * @since 2020/10/27-11:26 上午
  */

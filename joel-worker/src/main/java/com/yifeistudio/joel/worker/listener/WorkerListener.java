@@ -6,7 +6,6 @@ package com.yifeistudio.joel.worker.listener;
  */
 public interface WorkerListener {
 
-
     default void onStart() {}
 
     default void onSuspend() { }

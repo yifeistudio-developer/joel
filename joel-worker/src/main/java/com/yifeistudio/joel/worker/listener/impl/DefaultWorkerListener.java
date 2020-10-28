@@ -1,5 +1,6 @@
 package com.yifeistudio.joel.worker.listener.impl;
 
+import com.yifeistudio.joel.worker.config.TaskContext;
 import com.yifeistudio.joel.worker.config.WorkerContext;
 import com.yifeistudio.joel.worker.listener.WorkerListener;
 import com.yifeistudio.joel.worker.service.IdentityService;
@@ -25,6 +26,8 @@ public class DefaultWorkerListener implements WorkerListener {
     private final IdentityService identityService;
 
     private final WorkerContext workerContext;
+
+    private TaskContext taskContext;
 
     public DefaultWorkerListener(WorkerContext workerContext) {
         this.workerContext = workerContext;
@@ -65,12 +68,19 @@ public class DefaultWorkerListener implements WorkerListener {
             heartBeaThread.setName(HEARTBEAT_THREAD);
             heartBeaThread.start();
         }
+
+        // 准备接活
+        taskContext = new TaskContext(workerContext);
+
+        // 装备就绪
         workerContext.fireRun();
     }
 
 
     @Override
     public void onStop() {
+        // 停止心跳
         heartBeaThread.interrupt();
+
     }
 }
