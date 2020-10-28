@@ -16,26 +16,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
  * 节点全局上下文
+ *
  * @author yi
  * @since 2020/10/27-12:14 下午
  */
 @Slf4j
 public class WorkerContext {
-
-    private static final String STATE_MONITOR_THREAD = "state-monitor-thread";
-
-    private static final Lock LOCK = new ReentrantLock();
-
-    private static final Condition STATE_CHANGED = LOCK.newCondition();
-
-    private State state;
 
     private WorkerInfo workerInfo;
 
@@ -46,6 +36,8 @@ public class WorkerContext {
 
     @Getter
     private final WorkerConfig workerConfig;
+
+    private StateMachine<State> stateMachine;
 
     public WorkerContext(WorkerConfig workerConfig) {
         this.workerConfig = workerConfig;
@@ -62,14 +54,14 @@ public class WorkerContext {
         // 注册监听器
         registryListener();
 
-        // 启动消息通知线程
-        activateStateMonitor();
+        // 注册状态机
+        registryStateMachine();
 
         // 响应停机
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            fire(State.STOPPING);
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> fire(State.STOPPING)));
     }
+
+
 
 
     /**
@@ -103,6 +95,24 @@ public class WorkerContext {
 
     // ----------------------------------
 
+    private void registryStateMachine() {
+        stateMachine = new StateMachine<>(state -> {
+            switch (state) {
+                case STARTING:
+                    workerListeners.forEach(v -> executor.execute(v::onStart));
+                    break;
+                case SUSPENDING:
+                    workerListeners.forEach(v -> executor.execute(v::onSuspend));
+                    break;
+                case STOPPING:
+                    workerListeners.forEach(v -> executor.execute(v::onStop));
+                    break;
+                default:
+            }
+        });
+        stateMachine.startup();
+    }
+
     /*
      * 上下文状态
      */
@@ -116,14 +126,8 @@ public class WorkerContext {
     /*
      * 发布状态变更通知
      */
-    protected void fire(State state) {
-        LOCK.lock();
-        try {
-            this.state = state;
-            STATE_CHANGED.signal();
-        } finally {
-            LOCK.unlock();
-        }
+    public void fire(State state) {
+        stateMachine.fire(state);
     }
 
 
@@ -172,43 +176,6 @@ public class WorkerContext {
             workerListeners = new ArrayList<>();
             workerListeners.add(new DefaultWorkerListener(this));
         }
-    }
-
-    /*
-     * 状态监视器
-     */
-    private void activateStateMonitor() {
-        Thread stateMonitor = new Thread(() -> {
-            while (!Thread.interrupted()) {
-                LOCK.lock();
-                try {
-                    STATE_CHANGED.await();
-                    switch (state) {
-                        case STARTING:
-                            workerListeners.forEach(v -> executor.execute(v::onStart));
-                            break;
-                        case SUSPENDING:
-                            workerListeners.forEach(v -> executor.execute(v::onSuspend));
-                            break;
-                        case STOPPING:
-                            workerListeners.forEach(v -> executor.execute(v::onStop));
-                            break;
-                        default:
-                    }
-                } catch (InterruptedException ignore) {
-                    log.warn("state monitor interrupted.");
-                } finally {
-                    LOCK.unlock();
-                }
-            }
-        });
-
-        stateMonitor.setUncaughtExceptionHandler((thread, throwable) -> {
-            // TODO: 2020/10/28 未知异常处理器
-        });
-        stateMonitor.setName(STATE_MONITOR_THREAD);
-        stateMonitor.setDaemon(true);
-        stateMonitor.start();
     }
 
     /*
