@@ -22,7 +22,7 @@ public class DefaultWorkerListener implements WorkerListener {
 
     private static final String HEARTBEAT_THREAD = "heartbeat-thread";
 
-    private Thread heartBeaThread;
+    private Thread heartbeatThread;
 
     private final IdentityService identityService;
 
@@ -52,8 +52,8 @@ public class DefaultWorkerListener implements WorkerListener {
 
 
         // 激活心跳
-        if (heartBeaThread == null) {
-            heartBeaThread = new Thread(() -> {
+        if (heartbeatThread == null) {
+            heartbeatThread = new Thread(() -> {
                 while (!Thread.interrupted()) {
                     try {
                         Thread.sleep(5000);
@@ -66,10 +66,10 @@ public class DefaultWorkerListener implements WorkerListener {
                     }
                 }
             });
-            heartBeaThread.setPriority(1);
-            heartBeaThread.setDaemon(true);
-            heartBeaThread.setName(HEARTBEAT_THREAD);
-            heartBeaThread.start();
+            heartbeatThread.setPriority(1);
+            heartbeatThread.setDaemon(true);
+            heartbeatThread.setName(HEARTBEAT_THREAD);
+            heartbeatThread.start();
         }
 
         // 准备接活
@@ -83,6 +83,6 @@ public class DefaultWorkerListener implements WorkerListener {
     @Override
     public void onStop() {
         // 停止心跳
-        heartBeaThread.interrupt();
+        heartbeatThread.interrupt();
     }
 }
