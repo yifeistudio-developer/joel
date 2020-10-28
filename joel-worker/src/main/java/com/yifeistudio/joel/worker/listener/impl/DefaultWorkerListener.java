@@ -7,6 +7,11 @@ import com.yifeistudio.joel.worker.service.impl.ServiceFactory;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * 主节点事件监听
+ * - 启动
+ * - 挂起
+ * - 停机
+ *
  * @author yi
  * @since 2020/10/27-11:25 上午
  */
@@ -60,7 +65,6 @@ public class DefaultWorkerListener implements WorkerListener {
             heartBeaThread.setName(HEARTBEAT_THREAD);
             heartBeaThread.start();
         }
-
         workerContext.fireRun();
     }
 
