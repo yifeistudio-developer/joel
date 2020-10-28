@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
@@ -24,9 +27,15 @@ import java.util.concurrent.*;
  * @since 2020/10/27-12:14 下午
  */
 @Slf4j
-public class WorkerContext extends AbstractContext {
+public class WorkerContext {
 
     private static final String STATE_MONITOR_THREAD = "state-monitor-thread";
+
+    private static final Lock LOCK = new ReentrantLock();
+
+    private static final Condition STATE_CHANGED = LOCK.newCondition();
+
+    private State state;
 
     private WorkerInfo workerInfo;
 
@@ -42,7 +51,6 @@ public class WorkerContext extends AbstractContext {
         this.workerConfig = workerConfig;
     }
 
-    @Override
     public void init() {
 
         // 填充节点信息
@@ -64,8 +72,60 @@ public class WorkerContext extends AbstractContext {
     }
 
 
+    /**
+     * 开机
+     */
+    public void fireStartup() {
+        fire(State.STARTING);
+    }
+
+    /**
+     * 关机
+     */
+    public void fireStop() {
+        fire(State.STOPPING);
+    }
+
+    /**
+     * 暂停
+     */
+    public void fireSuspend() {
+        fire(State.SUSPENDING);
+    }
+
+    /**
+     * 继续
+     */
+    public void fireRun() {
+        fire(State.RUNNING);
+    }
+
 
     // ----------------------------------
+
+    /*
+     * 上下文状态
+     */
+    protected enum State {
+        STARTING,
+        RUNNING,
+        SUSPENDING,
+        STOPPING
+    }
+
+    /*
+     * 发布状态变更通知
+     */
+    protected void fire(State state) {
+        LOCK.lock();
+        try {
+            this.state = state;
+            STATE_CHANGED.signal();
+        } finally {
+            LOCK.unlock();
+        }
+    }
+
 
     /*
      * 加载工作节点信息

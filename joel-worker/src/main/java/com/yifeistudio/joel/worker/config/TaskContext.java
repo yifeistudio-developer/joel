@@ -9,7 +9,7 @@ import java.util.Collection;
  * @author yi
  * @since 2020/10/28-2:31 下午
  */
-public class TaskContext extends AbstractContext {
+public class TaskContext {
 
 
     private final WorkerContext workerContext;
@@ -19,22 +19,6 @@ public class TaskContext extends AbstractContext {
     public TaskContext(WorkerContext workerContext) {
         this.workerContext = workerContext;
     }
-
-    @Override
-    public void init() {
-
-        // 注册监听器
-
-
-    }
-
-
-
-
-
-
-
-
 
 
 

@@ -17,7 +17,6 @@ public class WorkerApplication {
     public static void main(String[] args) {
         WorkerApplication.startup(new WorkerConfig());
         LockSupport.parkUntil(Instant.now().plusSeconds(25).toEpochMilli());
-
     }
 
     public static void startup(WorkerConfig config) {
