@@ -61,9 +61,6 @@ public class WorkerContext {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> fire(State.STOPPING)));
     }
 
-
-
-
     /**
      * 开机
      */
