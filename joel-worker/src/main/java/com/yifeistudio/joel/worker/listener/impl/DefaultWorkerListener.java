@@ -7,6 +7,7 @@ import com.yifeistudio.joel.worker.service.IdentityService;
 import com.yifeistudio.joel.worker.service.impl.ServiceFactory;
 import lombok.extern.slf4j.Slf4j;
 
+
 /**
  * 主节点事件监听
  * - 启动
@@ -49,6 +50,7 @@ public class DefaultWorkerListener implements WorkerListener {
         // 注册成为工作节点
         identityService.signup();
 
+
         // 激活心跳
         if (heartBeaThread == null) {
             heartBeaThread = new Thread(() -> {
@@ -64,6 +66,7 @@ public class DefaultWorkerListener implements WorkerListener {
                     }
                 }
             });
+            heartBeaThread.setPriority(1);
             heartBeaThread.setDaemon(true);
             heartBeaThread.setName(HEARTBEAT_THREAD);
             heartBeaThread.start();
@@ -81,6 +84,5 @@ public class DefaultWorkerListener implements WorkerListener {
     public void onStop() {
         // 停止心跳
         heartBeaThread.interrupt();
-
     }
 }

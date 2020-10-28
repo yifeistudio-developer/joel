@@ -58,35 +58,35 @@ public class WorkerContext {
         registryStateMachine();
 
         // 响应停机
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> fire(State.STOPPING)));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> stateMachine.fire(State.STOPPING)));
     }
 
     /**
      * 开机
      */
     public void fireStartup() {
-        fire(State.STARTING);
+        stateMachine.fire(State.STARTING);
     }
 
     /**
      * 关机
      */
     public void fireStop() {
-        fire(State.STOPPING);
+        stateMachine.fire(State.STOPPING);
     }
 
     /**
      * 暂停
      */
     public void fireSuspend() {
-        fire(State.SUSPENDING);
+        stateMachine.fire(State.SUSPENDING);
     }
 
     /**
-     * 继续
+     * 运行
      */
     public void fireRun() {
-        fire(State.RUNNING);
+        stateMachine.fire(State.RUNNING);
     }
 
 
@@ -118,13 +118,6 @@ public class WorkerContext {
         RUNNING,
         SUSPENDING,
         STOPPING
-    }
-
-    /*
-     * 发布状态变更通知
-     */
-    public void fire(State state) {
-        stateMachine.fire(state);
     }
 
 
