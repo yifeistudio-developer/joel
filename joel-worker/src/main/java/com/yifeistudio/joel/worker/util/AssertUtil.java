@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
+ * 断言工具
  * @author yi
  * @since 2020/10/26-6:59 下午
  */
@@ -77,3 +78,4 @@ public final class AssertUtil {
     }
 
 }
+///～

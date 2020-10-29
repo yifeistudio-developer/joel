@@ -3,12 +3,10 @@ package com.yifeistudio.joel.worker.listener.impl;
 import com.yifeistudio.joel.worker.adaptor.MessageAdaptor;
 import com.yifeistudio.joel.worker.adaptor.impl.AdaptorFactory;
 import com.yifeistudio.joel.worker.config.TaskContext;
-import com.yifeistudio.joel.worker.config.TaskHandlerProxy;
 import com.yifeistudio.joel.worker.listener.TaskListener;
 import com.yifeistudio.joel.worker.model.WorkerConfig;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Map;
 import java.util.concurrent.BlockingDeque;
 
 /**
@@ -24,7 +22,7 @@ public class DefaultTaskListener implements TaskListener {
 
     private final TaskContext taskContext;
 
-    private MessageAdaptor messageAdaptor;
+    private final MessageAdaptor messageAdaptor;
 
     public DefaultTaskListener(TaskContext taskContext) {
         this.taskContext = taskContext;
@@ -52,5 +50,10 @@ public class DefaultTaskListener implements TaskListener {
         taskListenerThread.setPriority(Thread.MAX_PRIORITY);
         taskListenerThread.start();
 
+    }
+
+    @Override
+    public void onStop() {
+        taskListenerThread.interrupt();
     }
 }

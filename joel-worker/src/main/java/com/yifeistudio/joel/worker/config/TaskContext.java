@@ -5,6 +5,7 @@ import com.yifeistudio.joel.worker.model.Task;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -39,23 +40,10 @@ public class TaskContext {
         // 绑定 handler
         bindTaskHandler();
 
-        // 启动任务监听线程
-
     }
 
     public void fireStart() {
         stateStateMachine.fire(State.STARTING);
-    }
-
-    private void startupStateMachine() {
-        stateStateMachine = new StateMachine<>(state -> {
-
-
-        });
-    }
-
-    private void bindTaskHandler() {
-        handlerMap.put(Task.class, new TaskHandlerProxy(new DefaultTaskHandler()));
     }
 
     /**
@@ -66,8 +54,22 @@ public class TaskContext {
 
     }
 
-    public void fireTaskArrived(Object task) {
 
+    private void startupStateMachine() {
+        stateStateMachine = new StateMachine<>(state -> {
+
+
+        });
+    }
+
+    private void bindTaskHandler() {
+        if (handlerMap == null) {
+            handlerMap = new HashMap<>();
+        }
+        handlerMap.put(Task.class, new TaskHandlerProxy(new DefaultTaskHandler()));
+    }
+
+    public void fireTaskArrived(Object task) {
         workerContext.getExecutor().execute(() -> {
             TaskHandlerProxy proxy = handlerMap.get(task.getClass());
             try {

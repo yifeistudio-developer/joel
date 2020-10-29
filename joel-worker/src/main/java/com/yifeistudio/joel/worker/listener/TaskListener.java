@@ -6,11 +6,10 @@ package com.yifeistudio.joel.worker.listener;
  */
 public interface TaskListener {
 
+    default void onStart() {}
 
-    void onStart();
+    default void onSuspend() {}
 
-
-
-
+    default void onStop() {}
 
 }
