@@ -26,7 +26,11 @@ public class TaskContext {
     }
 
     public void init() {
+
         // 注册监听器
+
+        // 激活状态机
+
 
     }
 
@@ -62,7 +66,14 @@ public class TaskContext {
         if (heartbeatThread != null) {
             heartbeatThread.interrupt();
         }
+    }
+
+    private enum State {
+
+
 
     }
+
+
 }
 

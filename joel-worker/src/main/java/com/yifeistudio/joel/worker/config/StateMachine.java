@@ -69,6 +69,7 @@ public class StateMachine<S extends Enum<?>> {
      */
     public void shutdown() {
         stateThread.interrupt();
+
     }
 
 }

@@ -29,6 +29,10 @@ import java.util.concurrent.*;
 @Slf4j
 public class WorkerContext {
 
+
+    private static  final long DEFAULT_KEEP_LIVE_TIME = 5 * 60 * 1000;
+
+
     private WorkerInfo workerInfo;
 
     private Collection<WorkerListener> workerListeners;
@@ -59,14 +63,15 @@ public class WorkerContext {
         // 初始化执行器
         initializeExecutor();
 
-        // 注册监听器
-        registryListener();
+        // 绑定监听器
+        bindListener();
 
-        // 注册状态机
-        registryStateMachine();
+        // 启动状态机
+        startupStateMachine();
 
         // 响应停机
         Runtime.getRuntime().addShutdownHook(new Thread(() -> stateMachine.fire(State.STOPPING)));
+
     }
 
     /**
@@ -101,22 +106,20 @@ public class WorkerContext {
      * 关闭上下文
      * 回收资源
      */
-    public void shutdown() {
-
+    public synchronized void shutdown() {
         if (executor != null) {
             executor.shutdown();
         }
-
+        stateMachine.shutdown();
     }
 
     public Executor getExecutor() {
-
         return executor;
     }
 
     // ----------------------------------
 
-    private void registryStateMachine() {
+    private void startupStateMachine() {
         stateMachine = new StateMachine<>(state -> {
             switch (state) {
                 case STARTING:
@@ -170,13 +173,12 @@ public class WorkerContext {
 
 
         ExecutorConfig executorConfig = workerConfig.getExecutor();
-        long defaultKeepAliveTime = 5 * 60 * 1000;
         int defaultCoreSize = workerInfo.getCoreSize();
         int defaultMaxSize = defaultCoreSize * 2;
         if (executorConfig == null) {
             executorConfig = new ExecutorConfig();
             executorConfig.setCoreSize(defaultCoreSize);
-            executorConfig.setKeepAliveTime(defaultKeepAliveTime);
+            executorConfig.setKeepAliveTime(DEFAULT_KEEP_LIVE_TIME);
             executorConfig.setMaxSize(defaultMaxSize);
             workerConfig.setExecutor(executorConfig);
         } else {
@@ -187,7 +189,7 @@ public class WorkerContext {
                 executorConfig.setMaxSize(defaultMaxSize);
             }
             if (executorConfig.getKeepAliveTime() == null) {
-                executorConfig.setKeepAliveTime(defaultKeepAliveTime);
+                executorConfig.setKeepAliveTime(DEFAULT_KEEP_LIVE_TIME);
             }
         }
     }
@@ -212,7 +214,7 @@ public class WorkerContext {
     /*
      * 注册监听器
      */
-    private void registryListener() {
+    private void bindListener() {
         workerListeners = new ArrayList<>();
         workerListeners.add(new DefaultWorkerListener(this));
     }
