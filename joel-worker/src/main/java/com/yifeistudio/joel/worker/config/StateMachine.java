@@ -17,11 +17,11 @@ public class StateMachine<S extends Enum<?>> {
 
     private Thread stateThread;
 
-    private final StateMonitor<S> monitor;
+    private final StateHandler<S> monitor;
 
     private S state;
 
-    public StateMachine(StateMonitor<S> monitor) {
+    public StateMachine(StateHandler<S> monitor) {
         this.monitor = monitor;
     }
 

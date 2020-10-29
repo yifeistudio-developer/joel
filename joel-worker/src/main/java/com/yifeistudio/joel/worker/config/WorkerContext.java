@@ -168,6 +168,28 @@ public class WorkerContext {
      */
     private void loadConfig() {
 
+
+        ExecutorConfig executorConfig = workerConfig.getExecutor();
+        long defaultKeepAliveTime = 5 * 60 * 1000;
+        int defaultCoreSize = workerInfo.getCoreSize();
+        int defaultMaxSize = defaultCoreSize * 2;
+        if (executorConfig == null) {
+            executorConfig = new ExecutorConfig();
+            executorConfig.setCoreSize(defaultCoreSize);
+            executorConfig.setKeepAliveTime(defaultKeepAliveTime);
+            executorConfig.setMaxSize(defaultMaxSize);
+            workerConfig.setExecutor(executorConfig);
+        } else {
+            if (executorConfig.getCoreSize() == null) {
+                executorConfig.setCoreSize(workerInfo.getCoreSize());
+            }
+            if (executorConfig.getMaxSize() == null) {
+                executorConfig.setMaxSize(defaultMaxSize);
+            }
+            if (executorConfig.getKeepAliveTime() == null) {
+                executorConfig.setKeepAliveTime(defaultKeepAliveTime);
+            }
+        }
     }
 
     /**
@@ -176,11 +198,10 @@ public class WorkerContext {
 
     private void initializeExecutor() {
         ExecutorConfig executorConfig = workerConfig.getExecutor();
-
         ThreadFactory threadFactory = Thread::new;
-        executor = new ThreadPoolExecutor(1,
-                1,
-                5,
+        executor = new ThreadPoolExecutor(executorConfig.getCoreSize(),
+                executorConfig.getMaxSize(),
+                executorConfig.getKeepAliveTime(),
                 TimeUnit.MINUTES, new LinkedBlockingDeque<>(),
                 threadFactory);
         if (log.isInfoEnabled()) {
