@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
  * - 启动
  * - 挂起
  * - 停机
- *
  * @author yi
  * @since 2020/10/27-11:25 上午
  */
@@ -39,7 +38,6 @@ public class DefaultWorkerListener implements WorkerListener {
     public void onStart() {
 
         boolean seizeResult = identityService.seizeMasterRole();
-
         if (seizeResult) {
             // 激活管理线程
             log.info("seize master role success. register as master");

@@ -6,6 +6,9 @@ package com.yifeistudio.joel.worker.model;
  */
 public class Task {
 
+    private String id;
+
+    private String name;
 
 
 }

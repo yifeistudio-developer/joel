@@ -12,7 +12,7 @@ public class DefaultTaskHandler {
     @Subscribe
     public void handle(Task task) {
 
-        System.out.println(task);
     }
+
 
 }

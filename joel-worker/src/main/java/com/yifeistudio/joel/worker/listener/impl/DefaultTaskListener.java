@@ -26,11 +26,8 @@ public class DefaultTaskListener implements TaskListener {
 
     private MessageAdaptor messageAdaptor;
 
-    private final Map<Class<?>, TaskHandlerProxy> taskHandlerProxyMap;
-
     public DefaultTaskListener(TaskContext taskContext) {
         this.taskContext = taskContext;
-        taskHandlerProxyMap = taskContext.getHandlerMap();
         messageAdaptor = AdaptorFactory.getMessageAdaptor(new WorkerConfig());
     }
 
