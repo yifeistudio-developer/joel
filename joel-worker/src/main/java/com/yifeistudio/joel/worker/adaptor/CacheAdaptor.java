@@ -13,4 +13,6 @@ public interface CacheAdaptor {
      * @return 设置结果
      */
     boolean setIfAbsent(String key);
+
+
 }

@@ -7,4 +7,10 @@ package com.yifeistudio.joel.worker.listener;
 public interface TaskListener {
 
 
+    void onStart();
+
+
+
+
+
 }

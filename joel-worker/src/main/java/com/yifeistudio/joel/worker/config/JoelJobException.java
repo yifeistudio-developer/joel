@@ -19,4 +19,10 @@ public class JoelJobException extends RuntimeException {
         this.msg = msg;
     }
 
+    public JoelJobException(int code, String msg, Throwable t) {
+        super(msg, t);
+        this.code = code;
+        this.msg = msg;
+    }
+
 }

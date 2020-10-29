@@ -50,10 +50,6 @@ public class DefaultWorkerListener implements WorkerListener {
         // 注册成为工作节点
         identityService.signup();
 
-        // 注册任务上下文
-
-
-
         // 激活心跳
         if (heartbeatThread == null) {
             heartbeatThread = new Thread(() -> {
@@ -73,10 +69,15 @@ public class DefaultWorkerListener implements WorkerListener {
             heartbeatThread.setDaemon(true);
             heartbeatThread.setName(HEARTBEAT_THREAD);
             heartbeatThread.start();
+
+            // 注册任务上下文
+
         }
 
         // 准备接活
         taskContext = new TaskContext(workerContext);
+        taskContext.init();
+        taskContext.fireStart();
 
         // 装备就绪
         workerContext.fireRun();

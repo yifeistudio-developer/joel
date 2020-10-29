@@ -7,9 +7,8 @@ import java.util.concurrent.BlockingDeque;
  * @author yi
  * @since 2020/10/28-3:30 下午
  */
-public interface MessageAdaptor<T> {
+public interface MessageAdaptor {
 
-    BlockingDeque<T> createBlockingDeque(String dequeName);
-
+    BlockingDeque<?> getBlockingDeque(String dequeName);
 
 }
