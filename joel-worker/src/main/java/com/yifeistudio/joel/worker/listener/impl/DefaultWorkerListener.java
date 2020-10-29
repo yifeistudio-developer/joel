@@ -50,6 +50,9 @@ public class DefaultWorkerListener implements WorkerListener {
         // 注册成为工作节点
         identityService.signup();
 
+        // 注册任务上下文
+
+
 
         // 激活心跳
         if (heartbeatThread == null) {
@@ -84,5 +87,6 @@ public class DefaultWorkerListener implements WorkerListener {
     public void onStop() {
         // 停止心跳
         heartbeatThread.interrupt();
+
     }
 }

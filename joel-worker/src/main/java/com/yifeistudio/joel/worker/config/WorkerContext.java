@@ -2,8 +2,10 @@ package com.yifeistudio.joel.worker.config;
 
 import com.yifeistudio.joel.worker.listener.WorkerListener;
 import com.yifeistudio.joel.worker.listener.impl.DefaultWorkerListener;
+import com.yifeistudio.joel.worker.model.ExecutorConfig;
 import com.yifeistudio.joel.worker.model.WorkerConfig;
 import com.yifeistudio.joel.worker.model.WorkerInfo;
+import com.yifeistudio.joel.worker.util.AssertUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,8 +33,7 @@ public class WorkerContext {
 
     private Collection<WorkerListener> workerListeners;
 
-    @Getter
-    private Executor executor;
+    private ThreadPoolExecutor executor;
 
     @Getter
     private final WorkerConfig workerConfig;
@@ -40,16 +41,23 @@ public class WorkerContext {
     private StateMachine<State> stateMachine;
 
     public WorkerContext(WorkerConfig workerConfig) {
+        AssertUtil.notNull(workerConfig, "workerConfig must not null.");
         this.workerConfig = workerConfig;
     }
 
-    public void init() {
+    /**
+     * 初始化
+     */
+    public synchronized void init() {
 
         // 填充节点信息
         loadWorkerInfo();
 
         // 加载配置
         loadConfig();
+
+        // 初始化执行器
+        initializeExecutor();
 
         // 注册监听器
         registryListener();
@@ -89,6 +97,22 @@ public class WorkerContext {
         stateMachine.fire(State.RUNNING);
     }
 
+    /**
+     * 关闭上下文
+     * 回收资源
+     */
+    public void shutdown() {
+
+        if (executor != null) {
+            executor.shutdown();
+        }
+
+    }
+
+    public Executor getExecutor() {
+
+        return executor;
+    }
 
     // ----------------------------------
 
@@ -144,15 +168,21 @@ public class WorkerContext {
      */
     private void loadConfig() {
 
-        // TODO: 2020/10/28 配置执行线程池
-        if (executor == null) {
-            ThreadFactory threadFactory = Thread::new;
-            executor = new ThreadPoolExecutor(1,
-                    1,
-                    5,
-                    TimeUnit.MINUTES, new LinkedBlockingDeque<>(),
-                    threadFactory);
-        }
+    }
+
+    /**
+     *
+     */
+
+    private void initializeExecutor() {
+        ExecutorConfig executorConfig = workerConfig.getExecutor();
+
+        ThreadFactory threadFactory = Thread::new;
+        executor = new ThreadPoolExecutor(1,
+                1,
+                5,
+                TimeUnit.MINUTES, new LinkedBlockingDeque<>(),
+                threadFactory);
         if (log.isInfoEnabled()) {
             log.info("work configuration loaded.");
         }
@@ -162,10 +192,8 @@ public class WorkerContext {
      * 注册监听器
      */
     private void registryListener() {
-        if (workerListeners == null) {
-            workerListeners = new ArrayList<>();
-            workerListeners.add(new DefaultWorkerListener(this));
-        }
+        workerListeners = new ArrayList<>();
+        workerListeners.add(new DefaultWorkerListener(this));
     }
 
     /*
