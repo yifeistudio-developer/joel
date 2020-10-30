@@ -31,8 +31,8 @@ public class TaskContext {
 
     public void init() {
 
-        // 注册监听器
-
+        // 绑定监听器
+        bindListener();
 
         // 激活状态机
         startupStateMachine();
@@ -54,12 +54,15 @@ public class TaskContext {
 
     }
 
+    private void bindListener() {
+
+    }
 
     private void startupStateMachine() {
         stateStateMachine = new StateMachine<>(state -> {
 
-
         });
+        stateStateMachine.startup();
     }
 
     private void bindTaskHandler() {
@@ -74,11 +77,10 @@ public class TaskContext {
             TaskHandlerProxy proxy = handlerMap.get(task.getClass());
             try {
                 proxy.handle(task);
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
+            } catch (Throwable te) {
+                log.error("handle task error: ", te);
             }
         });
-
     }
 
     private enum State {

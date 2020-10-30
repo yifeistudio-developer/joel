@@ -29,9 +29,7 @@ import java.util.concurrent.*;
 @Slf4j
 public class WorkerContext {
 
-
     private static  final long DEFAULT_KEEP_LIVE_TIME = 5 * 60 * 1000;
-
 
     private WorkerInfo workerInfo;
 
