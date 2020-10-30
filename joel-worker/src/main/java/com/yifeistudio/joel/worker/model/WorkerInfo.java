@@ -15,4 +15,5 @@ public class WorkerInfo {
 
     private Integer coreSize;
 
+
 }

@@ -1,5 +1,7 @@
 package com.yifeistudio.joel.worker.adaptor;
 
+import com.yifeistudio.joel.worker.model.WorkerInfo;
+
 /**
  * 缓存适配器
  * @author yi
@@ -14,7 +16,14 @@ public interface CacheAdaptor {
      */
     boolean setIfAbsent(String key);
 
+    /**
+     * 添加集合成员
+     */
+    void addSetMember(String setName, WorkerInfo workerInfo);
 
-
+    /**
+     * 删除集合成员
+     */
+    void removeSetMember(String setName, WorkerInfo workerInfo);
 
 }

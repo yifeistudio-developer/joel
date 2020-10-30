@@ -41,20 +41,25 @@ class IdentityServiceImpl implements IdentityService {
     @Override
     public void releaseMasterRole() {
         if (role == Role.MASTER) {
-            // 放弃主节点角色
+            // 广播群组我放弃了老大的地位
+            role = Role.WORKER;
+            messageAdaptor.broadcast("", "I lost master role!");
+            // 下线管理线程
+
         }
     }
 
     @Override
     public void signup() {
+        // 注册成为工作组成员
 
     }
 
     @Override
     public void logout() {
 
+        // 广播下线
     }
-
 
     private enum Role {
         MASTER,

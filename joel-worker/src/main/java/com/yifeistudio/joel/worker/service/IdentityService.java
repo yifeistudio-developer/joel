@@ -13,7 +13,7 @@ public interface IdentityService {
     boolean seizeMasterRole();
 
     /**
-     * 放弃主节点身份
+     * 出让主节点身份
      */
     void releaseMasterRole();
 

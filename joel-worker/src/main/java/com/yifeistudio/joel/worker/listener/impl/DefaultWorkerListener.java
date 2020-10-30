@@ -86,6 +86,5 @@ public class DefaultWorkerListener implements WorkerListener {
     public void onStop() {
         // 停止心跳
         heartbeatThread.interrupt();
-
     }
 }
