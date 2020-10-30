@@ -29,4 +29,9 @@ class DefaultRedisAdaptor implements CacheAdaptor, MessageAdaptor {
 
         return null;
     }
+
+    @Override
+    public void broadcast(String topic, Object msg) {
+
+    }
 }

@@ -9,6 +9,17 @@ import java.util.concurrent.BlockingDeque;
  */
 public interface MessageAdaptor {
 
+    /**
+     * 消息阻塞队列
+     * @param dequeName 队列名
+     * @return 消息
+     */
     BlockingDeque<?> getBlockingDeque(String dequeName);
 
+    /**
+     * 广播消息
+     * @param topic 主题
+     * @param msg 消息内容
+     */
+    void broadcast(String topic, Object msg);
 }

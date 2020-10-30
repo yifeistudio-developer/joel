@@ -15,4 +15,6 @@ public interface CacheAdaptor {
     boolean setIfAbsent(String key);
 
 
+
+
 }

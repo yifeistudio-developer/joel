@@ -5,6 +5,7 @@ import com.yifeistudio.joel.worker.model.WorkerConfig;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.locks.LockSupport;
 
 /**
@@ -16,7 +17,7 @@ public class WorkerApplication {
 
     public static void main(String[] args) {
         WorkerApplication.startup(new WorkerConfig());
-        LockSupport.parkUntil(Instant.now().plusSeconds(25).toEpochMilli());
+        LockSupport.parkUntil(Instant.now().plus(5, ChronoUnit.MINUTES).toEpochMilli());
     }
 
     public static void startup(WorkerConfig config) {

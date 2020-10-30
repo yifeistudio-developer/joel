@@ -138,7 +138,7 @@ public class WorkerContext {
     /*
      * 上下文状态
      */
-    protected enum State {
+    private enum State {
         STARTING,
         RUNNING,
         SUSPENDING,
@@ -162,14 +162,15 @@ public class WorkerContext {
         if (log.isInfoEnabled()) {
             log.info("work information loaded.");
         }
+        if (log.isDebugEnabled()) {
+            log.debug("loaded worker information: {}", workerInfo);
+        }
     }
 
     /*
      * 加载全局配置
      */
     private void loadConfig() {
-
-
         ExecutorConfig executorConfig = workerConfig.getExecutor();
         int defaultCoreSize = workerInfo.getCoreSize();
         int defaultMaxSize = defaultCoreSize * 2;
@@ -193,9 +194,8 @@ public class WorkerContext {
     }
 
     /**
-     *
+     * 初始化执行器
      */
-
     private void initializeExecutor() {
         ExecutorConfig executorConfig = workerConfig.getExecutor();
         ThreadFactory threadFactory = Thread::new;
@@ -240,7 +240,11 @@ public class WorkerContext {
             return "";
         } catch (SocketException e) {
             log.warn("got worker ip address failed.");
+            if (log.isDebugEnabled()) {
+                log.debug("catch SocketException: ", e);
+            }
             return "";
         }
     }
 }
+///~

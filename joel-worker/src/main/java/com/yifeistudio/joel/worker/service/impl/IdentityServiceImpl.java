@@ -11,6 +11,8 @@ import com.yifeistudio.joel.worker.service.IdentityService;
  */
 class IdentityServiceImpl implements IdentityService {
 
+    private Role role;
+
     private final CacheAdaptor cacheAdaptor;
 
     private final WorkerConfig workerConfig;
@@ -23,12 +25,16 @@ class IdentityServiceImpl implements IdentityService {
     @Override
     public boolean seizeMasterRole() {
         String masterId = workerConfig.getMasterId();
-        return cacheAdaptor.setIfAbsent(masterId);
+        boolean isMaster = cacheAdaptor.setIfAbsent(masterId);
+        role = isMaster ? Role.MASTER : Role.WORKER;
+        return isMaster;
     }
 
     @Override
     public void releaseMasterRole() {
-
+        if (role == Role.MASTER) {
+            // 放弃主节点角色
+        }
     }
 
     @Override
@@ -40,4 +46,11 @@ class IdentityServiceImpl implements IdentityService {
     public void logout() {
 
     }
+
+
+    private enum Role {
+        MASTER,
+        WORKER
+    }
+
 }
