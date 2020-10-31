@@ -10,12 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DefaultTaskHandler implements TaskHandler<Task> {
 
-    //
     @Subscribe
     public void handle(Task task) {
         log.info("handle task... {}", task);
     }
-
-    //
 
 }

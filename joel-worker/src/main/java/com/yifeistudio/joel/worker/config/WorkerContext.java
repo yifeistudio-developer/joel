@@ -22,7 +22,6 @@ import java.util.concurrent.*;
 
 /**
  * 节点全局上下文
- *
  * @author yi
  * @since 2020/10/27-12:14 下午
  */
@@ -50,7 +49,7 @@ public class WorkerContext {
     /**
      * 初始化
      */
-    public synchronized void init() {
+    public void init() {
 
         // 填充节点信息
         loadWorkerInfo();
@@ -116,7 +115,6 @@ public class WorkerContext {
     }
 
     // ----------------------------------
-
     private void startupStateMachine() {
         stateMachine = new StateMachine<>(state -> {
             switch (state) {
