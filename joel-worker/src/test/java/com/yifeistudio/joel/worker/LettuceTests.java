@@ -2,7 +2,6 @@ package com.yifeistudio.joel.worker;
 
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
-import io.lettuce.core.SetArgs;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,6 @@ public class LettuceTests {
             redisCommands.del("testKey");
             assert redisCommands.get("testKey") == null;
             log.info("redis del test passed.");
-
 //            redisCommands.set("key", "value", SetArgs.Builder.ex());
         }
         redisClient.shutdown();
