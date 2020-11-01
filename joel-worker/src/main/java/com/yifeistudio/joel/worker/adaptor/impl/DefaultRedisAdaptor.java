@@ -4,6 +4,7 @@ import com.yifeistudio.joel.worker.adaptor.CacheAdaptor;
 import com.yifeistudio.joel.worker.adaptor.MessageAdaptor;
 import com.yifeistudio.joel.worker.model.RedisConfig;
 import com.yifeistudio.joel.worker.model.WorkerInfo;
+import com.yifeistudio.joel.worker.util.AssertUtil;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 
@@ -18,6 +19,7 @@ class DefaultRedisAdaptor implements CacheAdaptor, MessageAdaptor {
     private final RedisClient redisClient;
 
     public DefaultRedisAdaptor(RedisConfig redisConfig) {
+        AssertUtil.notNull(redisConfig, "redisConfig is null");
         RedisURI redisURI = RedisURI.builder()
                 .withHost(redisConfig.getHost())
                 .withPort(redisConfig.getPort())

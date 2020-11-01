@@ -3,6 +3,7 @@ package com.yifeistudio.joel.worker.config;
 import com.yifeistudio.joel.worker.listener.WorkerListener;
 import com.yifeistudio.joel.worker.listener.impl.DefaultWorkerListener;
 import com.yifeistudio.joel.worker.model.ExecutorConfig;
+import com.yifeistudio.joel.worker.model.RedisConfig;
 import com.yifeistudio.joel.worker.model.WorkerConfig;
 import com.yifeistudio.joel.worker.model.WorkerInfo;
 import com.yifeistudio.joel.worker.util.AssertUtil;
@@ -172,6 +173,15 @@ public class WorkerContext {
         ExecutorConfig executorConfig = workerConfig.getExecutor();
         int defaultCoreSize = workerInfo.getCoreSize();
         int defaultMaxSize = defaultCoreSize * 2;
+
+        if (workerConfig.getRedis() == null) {
+            RedisConfig redisConfig = new RedisConfig();
+            redisConfig.setHost("localhost");
+            redisConfig.setPassword("");
+            redisConfig.setPort(6379);
+            workerConfig.setRedis(redisConfig);
+        }
+
         if (executorConfig == null) {
             executorConfig = new ExecutorConfig();
             executorConfig.setCoreSize(defaultCoreSize);
